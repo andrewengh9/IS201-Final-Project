@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Calorie Calculator</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+    <link href="css/site-theme.css" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #f6f1e8;
+            --panel: #fffdf8;
+            --ink: #1f2a37;
+            --muted: #5c6773;
+            --accent: #3f6652;
+            --accent-2: #8f5f36;
+            --line: #d8d9cf;
+            --soft: #e6efe7;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(214, 229, 217, 0.16), transparent 24%),
+                linear-gradient(135deg, #294438, #3a5a49 40%, #4a6856 100%);
+            color: var(--ink);
+            padding: 0 1.25rem 1.25rem;
+        }
+
+        .app-shell {
+            width: min(1200px, 100%);
+            margin: 0 auto;
+            background: rgba(255, 252, 247, 0.98);
+            border: 1px solid rgba(222, 230, 220, 0.75);
+            border-radius: 28px;
+            box-shadow: 0 24px 55px rgba(18, 34, 28, 0.18);
+            overflow: hidden;
+        }
+
+        .app-header {
+            padding: 2rem;
+            background: linear-gradient(135deg, #3f6652, #21392d);
+            color: white;
+        }
+
+        .app-header h1 {
+            margin: 0 0 0.75rem;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        .app-header p {
+            margin: 0;
+            max-width: 52rem;
+            line-height: 1.6;
+        }
+
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: #f4efe6;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .summary-card {
+            background: #fffdf8;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 1rem;
+        }
+
+        .summary-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .summary-card strong {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .app-main {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+        }
+
+        .panel {
+            padding: 2rem;
+        }
+
+        .panel + .panel {
+            border-left: 1px solid var(--line);
+            background: #faf6ef;
+        }
+
+        .tool-card {
+            background: #fffdf8;
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .tool-card h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-family: Georgia, "Times New Roman", serif;
+            color: #233329;
+        }
+
+        .tool-card p {
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid.two {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.45rem;
+            font-weight: 700;
+        }
+
+        input, select, button {
+            width: 100%;
+            font: inherit;
+            border-radius: 14px;
+        }
+
+        input, select {
+            padding: 0.85rem 0.95rem;
+            border: 1px solid #c9c0b1;
+            background: #fff;
+            margin-bottom: 0.9rem;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            padding: 0.92rem 1rem;
+            font-weight: 700;
+        }
+
+        .primary-btn {
+            background: var(--accent);
+            color: white;
+        }
+
+        .secondary-btn {
+            background: var(--accent-2);
+            color: white;
+        }
+
+        .muted-btn {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .estimate-box {
+            background: var(--soft);
+            border-left: 6px solid var(--accent);
+            padding: 0.9rem 1rem;
+            border-radius: 12px;
+            margin-top: 0.8rem;
+        }
+
+        .list-box {
+            background: #fffdf8;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 1rem;
+            min-height: 180px;
+        }
+
+        .entry {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #ece4d8;
+        }
+
+        .entry:last-child {
+            border-bottom: none;
+        }
+
+        .entry small {
+            display: block;
+            color: var(--muted);
+            margin-top: 0.2rem;
+        }
+
+        .entry strong {
+            white-space: nowrap;
+        }
+
+        .net-positive { color: #1e6b47; }
+        .net-negative { color: #9d4f1d; }
+
+        .app-footer {
+            padding: 1.25rem 2rem 2rem;
+            border-top: 1px solid var(--line);
+        }
+
+        .app-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        @media (max-width: 980px) {
+            .summary-bar,
+            .app-main,
+            .grid.two {
+                grid-template-columns: 1fr;
+            }
+
+            .panel + .panel {
+                border-left: none;
+                border-top: 1px solid var(--line);
+            }
+        }
+    </style>
+</head>
+<body class="site-theme">
+    <nav class="navbar navbar-expand-lg navbar-light py-3 site-nav">
+        <div class="container px-5">
+            <a class="navbar-brand site-brand" href="index.html"><span class="fw-bolder"><span class="site-brand-icon" aria-hidden="true"><svg viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg"><path d="M4 26 16 12l7 8 9-14 15 20H4Z"></path><path d="M29 26 42 9l18 17H29Z"></path><path d="M14 26 24 15l8 11H14Z"></path></svg></span>Andrew Engh</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarApp" aria-controls="navbarApp" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarApp">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="resume.html">Resume</a></li>
+                    <li class="nav-item"><a class="nav-link" href="scratch.html">Scratch Page</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="app.html">Calorie Tracker</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="app-shell">
+        <div class="app-header">
+            <h1>Daily Calorie Calculator</h1>
+            <p>
+                Estimate calories from food and exercise over the course of a day. This app tracks calories eaten,
+                calories burned from running and gym sessions, and your running net total as you add entries.
+            </p>
+        </div>
+
+        <div class="summary-bar">
+            <div class="summary-card">
+                <span>Calories consumed</span>
+                <strong id="consumedTotal">0</strong>
+            </div>
+            <div class="summary-card">
+                <span>Calories burned</span>
+                <strong id="burnedTotal">0</strong>
+            </div>
+            <div class="summary-card">
+                <span>Net calories</span>
+                <strong id="netTotal">0</strong>
+            </div>
+            <div class="summary-card">
+                <span>Entries today</span>
+                <strong id="entryCount">0</strong>
+            </div>
+        </div>
+
+        <div class="app-main">
+            <section class="panel">
+                <div class="tool-card">
+                    <h2>Food Intake</h2>
+                    <p>Type a common food or meal name and the app can suggest a rough calorie estimate for typical portions.</p>
+                    <div class="grid two">
+                        <div>
+                            <label for="foodName">Food or meal</label>
+                            <input id="foodName" type="text" placeholder="Example: chicken burrito" />
+                        </div>
+                        <div>
+                            <label for="foodCalories">Calories eaten</label>
+                            <input id="foodCalories" type="number" min="0" placeholder="Example: 650" />
+                        </div>
+                    </div>
+                    <button class="muted-btn" id="estimateFood" type="button">Estimate Food Calories</button>
+                    <div class="estimate-box" id="foodEstimate">No food estimate yet.</div>
+                    <button class="primary-btn" id="addFood">Add Food</button>
+                </div>
+
+                <div class="tool-card">
+                    <h2>Running Calories</h2>
+                    <p>Uses your body size, age, pace, and workout length to estimate calories burned from running.</p>
+                    <div class="grid two">
+                        <div>
+                            <label for="runWeight">Weight (lb)</label>
+                            <input id="runWeight" type="number" min="1" placeholder="Example: 170" />
+                        </div>
+                        <div>
+                            <label for="runAge">Age</label>
+                            <input id="runAge" type="number" min="1" placeholder="Example: 21" />
+                        </div>
+                        <div>
+                            <label for="runMinutes">Run duration (minutes)</label>
+                            <input id="runMinutes" type="number" min="1" placeholder="Example: 35" />
+                        </div>
+                        <div>
+                            <label for="runPace">Pace / intensity</label>
+                            <select id="runPace">
+                                <option value="8.3">Light jog</option>
+                                <option value="9.8" selected>Steady run</option>
+                                <option value="11">Fast run</option>
+                                <option value="11.8">Very hard run</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="secondary-btn" id="estimateRun">Estimate Run Burn</button>
+                    <div class="estimate-box" id="runEstimate">No running workout added yet.</div>
+                </div>
+
+                <div class="tool-card">
+                    <h2>Gym Calories</h2>
+                    <p>Estimate calorie burn for a gym session based on body size, age, workout length, and activity type.</p>
+                    <div class="grid two">
+                        <div>
+                            <label for="gymWeight">Weight (lb)</label>
+                            <input id="gymWeight" type="number" min="1" placeholder="Example: 170" />
+                        </div>
+                        <div>
+                            <label for="gymAge">Age</label>
+                            <input id="gymAge" type="number" min="1" placeholder="Example: 21" />
+                        </div>
+                        <div>
+                            <label for="gymMinutes">Gym duration (minutes)</label>
+                            <input id="gymMinutes" type="number" min="1" placeholder="Example: 50" />
+                        </div>
+                        <div>
+                            <label for="gymType">Workout type</label>
+                            <select id="gymType">
+                                <option value="3.5">Light weights / machines</option>
+                                <option value="5.0" selected>General lifting</option>
+                                <option value="6.0">Circuit training</option>
+                                <option value="7.3">High intensity gym workout</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="secondary-btn" id="estimateGym">Estimate Gym Burn</button>
+                    <div class="estimate-box" id="gymEstimate">No gym workout added yet.</div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="tool-card">
+                    <h2>Today’s Log</h2>
+                    <div class="list-box" id="dailyLog">
+                        <p class="empty-note">No foods or workouts logged yet.</p>
+                    </div>
+                    <button class="muted-btn" id="clearDay" type="button">Clear Day</button>
+                </div>
+
+                <div class="tool-card">
+                    <h2>How It Works</h2>
+                    <p>
+                        Food entries increase your total consumed calories. Running and gym workouts increase total calories burned.
+                        The app updates your net calories as:
+                    </p>
+                    <div class="estimate-box">
+                        <strong>Net calories = consumed calories - burned calories</strong>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        These are useful estimates, not medical advice. Real calorie needs and burn rates vary by fitness level,
+                        body composition, sex, workout efficiency, and intensity.
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <div class="app-footer">
+            <a href="scratch.html">Scratch Page</a> |
+            <a href="index.html">Home</a>
+        </div>
+    </div>
+
+    <footer class="py-4 mt-auto site-footer">
+        <div class="container px-5">
+            <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+                <div class="col-auto"><div class="small m-0">Copyright &copy; Andrew Engh 2026</div></div>
+                <div class="col-auto">
+                    <a class="small" href="index.html">Home</a>
+                    <span class="mx-1">&middot;</span>
+                    <a class="small" href="resume.html">Resume</a>
+                    <span class="mx-1">&middot;</span>
+                    <a class="small" href="scratch.html">Scratch Page</a>
+                    <span class="mx-1">&middot;</span>
+                    <a class="small" href="contact.html">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const foodButton = document.getElementById("addFood");
+        const runButton = document.getElementById("estimateRun");
+        const gymButton = document.getElementById("estimateGym");
+        const clearButton = document.getElementById("clearDay");
+        const estimateFoodButton = document.getElementById("estimateFood");
+
+        const consumedTotal = document.getElementById("consumedTotal");
+        const burnedTotal = document.getElementById("burnedTotal");
+        const netTotal = document.getElementById("netTotal");
+        const entryCount = document.getElementById("entryCount");
+        const dailyLog = document.getElementById("dailyLog");
+        const runEstimate = document.getElementById("runEstimate");
+        const gymEstimate = document.getElementById("gymEstimate");
+        const foodEstimate = document.getElementById("foodEstimate");
+
+        const entries = [];
+        const foodDatabase = {
+            apple: 95,
+            banana: 105,
+            orange: 62,
+            egg: 78,
+            eggs: 156,
+            oatmeal: 150,
+            yogurt: 150,
+            granola: 220,
+            toast: 90,
+            bagel: 275,
+            cereal: 180,
+            milk: 120,
+            protein_shake: 200,
+            sandwich: 400,
+            turkey_sandwich: 350,
+            peanut_butter_sandwich: 380,
+            burger: 550,
+            cheeseburger: 600,
+            pizza: 285,
+            burrito: 650,
+            taco: 190,
+            salad: 250,
+            chicken_salad: 350,
+            chicken_breast: 230,
+            steak: 450,
+            rice: 205,
+            pasta: 310,
+            spaghetti: 330,
+            ramen: 380,
+            fries: 365,
+            chips: 160,
+            cookie: 160,
+            brownie: 240,
+            donut: 260,
+            ice_cream: 270,
+            smoothie: 250,
+            soda: 150
+        };
+
+        function poundsToKg(pounds) {
+            return pounds * 0.453592;
+        }
+
+        function normalizeFoodName(name) {
+            return name
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, "_");
+        }
+
+        function estimateFoodCalories(name) {
+            const normalized = normalizeFoodName(name);
+            if (foodDatabase[normalized]) {
+                return { calories: foodDatabase[normalized], matched: normalized };
+            }
+
+            const partialMatch = Object.keys(foodDatabase).find(key =>
+                normalized.includes(key) || key.includes(normalized)
+            );
+
+            if (partialMatch) {
+                return { calories: foodDatabase[partialMatch], matched: partialMatch };
+            }
+
+            return null;
+        }
+
+        function ageAdjustment(age) {
+            if (age < 18) return 0.96;
+            if (age <= 35) return 1;
+            if (age <= 50) return 0.97;
+            return 0.94;
+        }
+
+        function estimateBurn(weightLb, minutes, met, age) {
+            const weightKg = poundsToKg(weightLb);
+            const baseBurn = (met * 3.5 * weightKg / 200) * minutes;
+            return Math.round(baseBurn * ageAdjustment(age));
+        }
+
+        function updateTotals() {
+            const consumed = entries
+                .filter(entry => entry.type === "food")
+                .reduce((sum, entry) => sum + entry.calories, 0);
+
+            const burned = entries
+                .filter(entry => entry.type !== "food")
+                .reduce((sum, entry) => sum + entry.calories, 0);
+
+            const net = consumed - burned;
+
+            consumedTotal.textContent = consumed;
+            burnedTotal.textContent = burned;
+            netTotal.textContent = net;
+            netTotal.className = net >= 0 ? "net-positive" : "net-negative";
+            entryCount.textContent = entries.length;
+
+            renderEntries();
+        }
+
+        function renderEntries() {
+            if (!entries.length) {
+                dailyLog.innerHTML = '<p class="empty-note">No foods or workouts logged yet.</p>';
+                return;
+            }
+
+            dailyLog.innerHTML = entries.map(entry => `
+                <div class="entry">
+                    <div>
+                        <strong>${entry.label}</strong>
+                        <small>${entry.detail}</small>
+                    </div>
+                    <strong>${entry.displayValue}</strong>
+                </div>
+            `).join("");
+        }
+
+        foodButton.addEventListener("click", () => {
+            const foodName = document.getElementById("foodName").value.trim();
+            let foodCalories = Number(document.getElementById("foodCalories").value);
+
+            if (!foodName) {
+                return;
+            }
+
+            if (!foodCalories || foodCalories < 0) {
+                const estimate = estimateFoodCalories(foodName);
+                if (estimate) {
+                    foodCalories = estimate.calories;
+                    document.getElementById("foodCalories").value = foodCalories;
+                    foodEstimate.textContent = `Estimated ${foodName} at about ${foodCalories} calories based on a typical serving.`;
+                } else {
+                    foodEstimate.textContent = "No built-in estimate found for that food. You can still enter calories manually.";
+                    return;
+                }
+            }
+
+            entries.push({
+                type: "food",
+                label: foodName,
+                detail: "Calories consumed",
+                calories: foodCalories,
+                displayValue: `+${foodCalories} cal`
+            });
+
+            document.getElementById("foodName").value = "";
+            document.getElementById("foodCalories").value = "";
+            updateTotals();
+        });
+
+        estimateFoodButton.addEventListener("click", () => {
+            const foodName = document.getElementById("foodName").value.trim();
+            if (!foodName) {
+                foodEstimate.textContent = "Enter a food name first to get an estimate.";
+                return;
+            }
+
+            const estimate = estimateFoodCalories(foodName);
+            if (!estimate) {
+                foodEstimate.textContent = "No built-in estimate found for that food. Try a simpler name like pizza, burrito, apple, or burger.";
+                return;
+            }
+
+            document.getElementById("foodCalories").value = estimate.calories;
+            foodEstimate.textContent = `Rough estimate for ${foodName}: ${estimate.calories} calories for a typical serving.`;
+        });
+
+        runButton.addEventListener("click", () => {
+            const weight = Number(document.getElementById("runWeight").value);
+            const age = Number(document.getElementById("runAge").value);
+            const minutes = Number(document.getElementById("runMinutes").value);
+            const met = Number(document.getElementById("runPace").value);
+
+            if (!weight || !age || !minutes) {
+                runEstimate.textContent = "Please fill in weight, age, and duration for the running estimate.";
+                return;
+            }
+
+            const calories = estimateBurn(weight, minutes, met, age);
+
+            entries.push({
+                type: "run",
+                label: "Running workout",
+                detail: `${minutes} min run, weight ${weight} lb, age ${age}`,
+                calories,
+                displayValue: `-${calories} cal`
+            });
+
+            runEstimate.textContent = `Estimated running calories burned: ${calories} calories. This workout has been added to today's log.`;
+            updateTotals();
+        });
+
+        gymButton.addEventListener("click", () => {
+            const weight = Number(document.getElementById("gymWeight").value);
+            const age = Number(document.getElementById("gymAge").value);
+            const minutes = Number(document.getElementById("gymMinutes").value);
+            const met = Number(document.getElementById("gymType").value);
+            const gymTypeText = document.getElementById("gymType").selectedOptions[0].textContent;
+
+            if (!weight || !age || !minutes) {
+                gymEstimate.textContent = "Please fill in weight, age, and duration for the gym estimate.";
+                return;
+            }
+
+            const calories = estimateBurn(weight, minutes, met, age);
+
+            entries.push({
+                type: "gym",
+                label: "Gym workout",
+                detail: `${gymTypeText}, ${minutes} min, weight ${weight} lb, age ${age}`,
+                calories,
+                displayValue: `-${calories} cal`
+            });
+
+            gymEstimate.textContent = `Estimated gym calories burned: ${calories} calories. This workout has been added to today's log.`;
+            updateTotals();
+        });
+
+        clearButton.addEventListener("click", () => {
+            entries.length = 0;
+            runEstimate.textContent = "No running workout added yet.";
+            gymEstimate.textContent = "No gym workout added yet.";
+            foodEstimate.textContent = "No food estimate yet.";
+            updateTotals();
+        });
+
+        updateTotals();
+    </script>
+</body>
+</html>
